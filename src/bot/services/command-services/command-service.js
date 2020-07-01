@@ -25,4 +25,4 @@ CommandHandler = __decorate([
     inversify_1.injectable()
 ], CommandHandler);
 exports.CommandHandler = CommandHandler;
-//# sourceMappingURL=command-handler.js.map
+//# sourceMappingURL=command-service.js.map

@@ -6,9 +6,11 @@ exports.TYPES = {
     Token: Symbol("Token"),
     DbClient: Symbol("DbClient"),
     DbConnectionString: Symbol("DbConnectionString"),
+    GatewayEventLogger: Symbol("GatewayEventLogger"),
     GatewayMessageLogger: Symbol("GatewayMessageLogger"),
     GatewayConnectionLogger: Symbol("GatewayConnectionLogger"),
     DatabaseConnectionLogger: Symbol("DatabaseConnectionLogger"),
-    CommandHandler: Symbol("CommandHandler")
+    CommandHandler: Symbol("CommandHandler"),
+    NewMessageHandler: Symbol("NewMessageHandler")
 };
 //# sourceMappingURL=types.js.map

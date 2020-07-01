@@ -1,6 +1,5 @@
 import { Collection } from 'discord.js';
-import { injectable, inject } from 'inversify';
-import { TYPES } from '../../../util/types';
+import { injectable } from 'inversify';
 
 const moduleList = [
 

@@ -25,30 +25,33 @@ const discord_js_1 = require("discord.js");
 const inversify_1 = require("inversify");
 const types_1 = require("../util/types");
 const inversify_config_1 = require("../util/inversify.config");
+const new_message_handler_1 = require("./services/event-handlers/new-message-handler");
 let Bot = class Bot {
-    constructor(client, token, GatewayMessageLogger, DatabaseConnectionLogger) {
+    constructor(client, token, GatewayMessageLogger, NewMessageHandler) {
         this.client = client;
         this.token = token;
         this.GatewayMessageLogger = GatewayMessageLogger;
-        this.DatabaseConnectionLogger = DatabaseConnectionLogger;
+        this.newMessageHandler = NewMessageHandler;
     }
     listen() {
         this.client.once('ready', () => __awaiter(this, void 0, void 0, function* () {
+            this.client.user.setActivity("Kawaeko Bot is under development, please check back later.");
             const mongoClient = inversify_config_1.default.get(types_1.TYPES.DbClient);
             yield mongoClient.connect();
             this.commandHandler = inversify_config_1.default.get(types_1.TYPES.CommandHandler);
             this.commandList = this.commandHandler.instantiateCommands();
-            this.client.user.setActivity("Bot is under development, please check back later.", { url: "Insert URL here", type: "PLAYING" });
         }));
-        this.client.on('message', (message) => {
+        this.client.on('message', (message) => __awaiter(this, void 0, void 0, function* () {
             if (message.author.bot)
                 return;
             this.GatewayMessageLogger.debug(`User: ${message.author.username}\tServer: ${message.guild != null ? message.guild.name : "In DM Channel"}\tMessageRecieved: ${message.content}\tTimestamp: ${message.createdTimestamp}`);
-            var command = this.commandList.find(command => message.content.includes(`p.${command.name}`));
-            if (command) {
-                command.execute(message, message.content.substring((`p.${command.name}`).length, message.content.length).trim());
-            }
-        });
+            this.newMessageHandler.handle(message, this.commandList);
+        }));
+        this.client.on('error', (error) => __awaiter(this, void 0, void 0, function* () {
+            this.GatewayMessageLogger.error(`Kawaeko Bot Error: ${error}`);
+            var devUser = this.client.users.cache.find(user => user.id == process.env.DEVID);
+            devUser.send(`**Kawaeko Bot Error**: ${JSON.stringify(error, null, 2)}`);
+        }));
         return this.client.login(this.token);
     }
 };
@@ -57,8 +60,8 @@ Bot = __decorate([
     __param(0, inversify_1.inject(types_1.TYPES.Client)),
     __param(1, inversify_1.inject(types_1.TYPES.Token)),
     __param(2, inversify_1.inject(types_1.TYPES.GatewayMessageLogger)),
-    __param(3, inversify_1.inject(types_1.TYPES.DatabaseConnectionLogger)),
-    __metadata("design:paramtypes", [discord_js_1.Client, String, Object, Object])
+    __param(3, inversify_1.inject(types_1.TYPES.NewMessageHandler)),
+    __metadata("design:paramtypes", [discord_js_1.Client, String, Object, new_message_handler_1.NewMessageHandler])
 ], Bot);
 exports.Bot = Bot;
 //# sourceMappingURL=bot.js.map
