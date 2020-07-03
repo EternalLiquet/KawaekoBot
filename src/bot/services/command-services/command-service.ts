@@ -1,8 +1,9 @@
 import { Collection } from 'discord.js';
 import { injectable } from 'inversify';
+import { FunModule } from './modules/fun-module';
 
 const moduleList = [
-
+    FunModule
 ];
 
 @injectable()

@@ -8,7 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const inversify_1 = require("inversify");
-const moduleList = [];
+const fun_module_1 = require("./modules/fun-module");
+const moduleList = [
+    fun_module_1.FunModule
+];
 let CommandHandler = class CommandHandler {
     instantiateCommands() {
         this.commandCollection = new discord_js_1.Collection();
