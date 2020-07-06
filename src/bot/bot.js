@@ -38,8 +38,8 @@ let Bot = class Bot {
             this.client.user.setActivity("Kawaeko Bot is under development, please check back later.");
             const mongoClient = inversify_config_1.default.get(types_1.TYPES.DbClient);
             yield mongoClient.connect();
-            this.commandHandler = inversify_config_1.default.get(types_1.TYPES.CommandHandler);
-            this.commandList = this.commandHandler.instantiateCommands();
+            this.commandService = inversify_config_1.default.get(types_1.TYPES.CommandService);
+            this.commandList = this.commandService.instantiateCommands();
         }));
         this.client.on('message', (message) => __awaiter(this, void 0, void 0, function* () {
             if (message.author.bot)

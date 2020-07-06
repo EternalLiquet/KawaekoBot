@@ -4,15 +4,6 @@ import container from "../../../../util/inversify.config";
 import { Logger } from "typescript-logging";
 
 export class FunModule {
-    private FunModuleLogger: Logger;
-
-    constructor(
-        @inject(TYPES.FunModuleLogger) funModuleLogger: Logger
-
-    ) {
-        this.FunModuleLogger = funModuleLogger;
-    }
-
     public ModuleCommandList = [
         {
             name: 'yuumi',
@@ -20,7 +11,10 @@ export class FunModule {
             help_text: `POC`,
             alias: 'meow',
             async execute(message: Message, args: string) {
-                message.channel.send('meow adc-kun let me buff u uwu');
+                message.channel.send('meow adc-kun let me buff u uwu')
+                .catch(error => {
+                    Promise.reject(error);
+                });
             }
         },
         {
@@ -36,7 +30,24 @@ export class FunModule {
                     .then(response => response.json())
                     .then(answer => message.channel.send(answer.magic.answer))
                     .catch(error => {
-                        console.error(error);
+                        Promise.reject(error);
+                    })
+            }
+        },
+        {
+            name: 'meme',
+            description: 'Give random meme',
+            help_text: 'POC',
+            alias: 'meme',
+            async execute(message: Message, args: string) {
+                var uri = `https://meme-api.herokuapp.com/gimme`;
+                console.log('here')
+                await fetch(uri)
+                    .then(response => response.json())
+                    .then(answer => { console.log(answer.url)
+                        message.channel.send(answer.url)})
+                    .catch(error => {
+                        Promise.reject(error);
                     })
             }
         }

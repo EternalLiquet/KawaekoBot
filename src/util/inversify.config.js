@@ -19,7 +19,7 @@ container.bind(types_1.TYPES.GatewayConnectionLogger).toConstantValue(log_config
 container.bind(types_1.TYPES.DatabaseConnectionLogger).toConstantValue(log_config_1.factory.getLogger("DatabaseConnection"));
 container.bind(types_1.TYPES.GatewayEventLogger).toConstantValue(log_config_1.factory.getLogger("Gateway.Event"));
 container.bind(types_1.TYPES.DbClient).to(dbclient_1.DbClient).inSingletonScope();
-container.bind(types_1.TYPES.CommandHandler).to(command_service_1.CommandHandler).inSingletonScope();
+container.bind(types_1.TYPES.CommandService).to(command_service_1.CommandService).inSingletonScope();
 container.bind(types_1.TYPES.NewMessageHandler).to(new_message_handler_1.NewMessageHandler).inSingletonScope();
 exports.default = container;
 //# sourceMappingURL=inversify.config.js.map

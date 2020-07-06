@@ -12,7 +12,7 @@ const fun_module_1 = require("./modules/fun-module");
 const moduleList = [
     fun_module_1.FunModule
 ];
-let CommandHandler = class CommandHandler {
+let CommandService = class CommandService {
     instantiateCommands() {
         this.commandCollection = new discord_js_1.Collection();
         moduleList.forEach((commandModule) => {
@@ -24,8 +24,8 @@ let CommandHandler = class CommandHandler {
         return this.commandCollection;
     }
 };
-CommandHandler = __decorate([
+CommandService = __decorate([
     inversify_1.injectable()
-], CommandHandler);
-exports.CommandHandler = CommandHandler;
+], CommandService);
+exports.CommandService = CommandService;
 //# sourceMappingURL=command-service.js.map

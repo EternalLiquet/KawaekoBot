@@ -7,7 +7,7 @@ const moduleList = [
 ];
 
 @injectable()
-export class CommandHandler {
+export class CommandService {
     public commandCollection: Collection<string, any>;
 
     instantiateCommands(): Collection<string, any> {
