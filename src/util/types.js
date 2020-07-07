@@ -10,7 +10,8 @@ exports.TYPES = {
     GatewayMessageLogger: Symbol("GatewayMessageLogger"),
     GatewayConnectionLogger: Symbol("GatewayConnectionLogger"),
     DatabaseConnectionLogger: Symbol("DatabaseConnectionLogger"),
-    CommandHandler: Symbol("CommandHandler"),
+    FunModuleLogger: Symbol("FunModuleLogger"),
+    CommandService: Symbol("CommandService"),
     NewMessageHandler: Symbol("NewMessageHandler")
 };
 //# sourceMappingURL=types.js.map

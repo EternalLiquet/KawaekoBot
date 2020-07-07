@@ -6,7 +6,7 @@ import { Client } from "discord.js";
 import { Logger } from "typescript-logging";
 import { factory } from "./log.config";
 import { DbClient } from "./dbclient";
-import { CommandHandler } from "../bot/services/command-services/command-service";
+import { CommandService } from "../bot/services/command-services/command-service";
 import { NewMessageHandler } from "../bot/services/event-handlers/new-message-handler";
 
 let container = new Container();
@@ -20,7 +20,7 @@ container.bind<Logger>(TYPES.GatewayConnectionLogger).toConstantValue(factory.ge
 container.bind<Logger>(TYPES.DatabaseConnectionLogger).toConstantValue(factory.getLogger("DatabaseConnection"));
 container.bind<Logger>(TYPES.GatewayEventLogger).toConstantValue(factory.getLogger("Gateway.Event"));
 container.bind<DbClient>(TYPES.DbClient).to(DbClient).inSingletonScope();
-container.bind<CommandHandler>(TYPES.CommandHandler).to(CommandHandler).inSingletonScope();
+container.bind<CommandService>(TYPES.CommandService).to(CommandService).inSingletonScope();
 container.bind<NewMessageHandler>(TYPES.NewMessageHandler).to(NewMessageHandler).inSingletonScope();
 
 export default container;

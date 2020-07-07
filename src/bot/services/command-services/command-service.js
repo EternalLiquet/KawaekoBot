@@ -8,8 +8,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const inversify_1 = require("inversify");
-const moduleList = [];
-let CommandHandler = class CommandHandler {
+const fun_module_1 = require("./modules/fun-module");
+const moduleList = [
+    fun_module_1.FunModule
+];
+let CommandService = class CommandService {
     instantiateCommands() {
         this.commandCollection = new discord_js_1.Collection();
         moduleList.forEach((commandModule) => {
@@ -21,8 +24,8 @@ let CommandHandler = class CommandHandler {
         return this.commandCollection;
     }
 };
-CommandHandler = __decorate([
+CommandService = __decorate([
     inversify_1.injectable()
-], CommandHandler);
-exports.CommandHandler = CommandHandler;
+], CommandService);
+exports.CommandService = CommandService;
 //# sourceMappingURL=command-service.js.map

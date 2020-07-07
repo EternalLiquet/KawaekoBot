@@ -4,7 +4,7 @@ import { TYPES } from "../util/types";
 import { Logger } from "typescript-logging";
 import { DbClient } from "../util/dbclient";
 import container from "../util/inversify.config";
-import { CommandHandler } from "./services/command-services/command-handler";
+import { CommandService } from "./services/command-services/command-service";
 import { NewMessageHandler } from './services/event-handlers/new-message-handler';
 
 @injectable()
@@ -12,7 +12,7 @@ export class Bot {
     private client: Client;
     private readonly token: string;
     private GatewayMessageLogger: Logger;
-    private commandHandler: CommandHandler;
+    private commandService: CommandService;
     private newMessageHandler: NewMessageHandler;
     private commandList: Collection<string, any>;
 
@@ -33,8 +33,8 @@ export class Bot {
             this.client.user.setActivity("Kawaeko Bot is under development, please check back later.");
             const mongoClient = container.get<DbClient>(TYPES.DbClient);
             await mongoClient.connect();
-            this.commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
-            this.commandList = this.commandHandler.instantiateCommands();
+            this.commandService = container.get<CommandService>(TYPES.CommandService);
+            this.commandList = this.commandService.instantiateCommands();
         });
 
         this.client.on('message', async (message: Message) => {

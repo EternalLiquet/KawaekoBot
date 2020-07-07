@@ -19,9 +19,11 @@ const inversify_1 = require("inversify");
 let NewMessageHandler = class NewMessageHandler {
     handle(message, commandList) {
         return __awaiter(this, void 0, void 0, function* () {
-            var command = commandList.find(command => message.content.includes(`p.${command.name}`));
+            var command = commandList.find(command => message.content.includes(`~> ${command.name}`));
+            if (!command)
+                command = commandList.find(command => message.content.includes(`~> ${command.alias}`));
             if (command) {
-                command.execute(message, message.content.substring((`p.${command.name}`).length, message.content.length).trim());
+                command.execute(message, message.content.substring((`~> ${command.name}`).length, message.content.length).trim());
             }
         });
     }
