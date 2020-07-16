@@ -6,8 +6,9 @@ import { Client } from "discord.js";
 import { Logger } from "typescript-logging";
 import { factory } from "./log.config";
 import { DbClient } from "./dbclient";
-import { CommandService } from "../bot/services/command-services/command-service";
+import { CommandService } from "../bot/services/message-services/command-service";
 import { NewMessageHandler } from "../bot/services/event-handlers/new-message-handler";
+import { UwUCounterService } from '../bot/services/message-services/uwu-counter-services';
 
 let container = new Container();
 
@@ -22,5 +23,6 @@ container.bind<Logger>(TYPES.GatewayEventLogger).toConstantValue(factory.getLogg
 container.bind<DbClient>(TYPES.DbClient).to(DbClient).inSingletonScope();
 container.bind<CommandService>(TYPES.CommandService).to(CommandService).inSingletonScope();
 container.bind<NewMessageHandler>(TYPES.NewMessageHandler).to(NewMessageHandler).inSingletonScope();
+container.bind<UwUCounterService>(TYPES.UwUCounterService).to(UwUCounterService).inSingletonScope();
 
 export default container;

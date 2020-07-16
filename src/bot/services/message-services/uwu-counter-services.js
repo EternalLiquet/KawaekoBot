@@ -16,26 +16,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
+const mongodb_typescript_1 = require("mongodb-typescript");
 const inversify_config_1 = require("../../../util/inversify.config");
 const types_1 = require("../../../util/types");
-let NewMessageHandler = class NewMessageHandler {
-    handle(message, commandList) {
+const kawaeko_uwu_counter_1 = require("../../../entities/kawaeko-uwu-counter");
+let UwUCounterService = class UwUCounterService {
+    handle(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            /**  Handle Commands **/
-            var command = commandList.find(command => message.content.includes(`~> ${command.name}`));
-            if (!command)
-                command = commandList.find(command => message.content.includes(`~> ${command.alias}`));
-            if (command) {
-                command.execute(message, message.content.substring((`~> ${command.name}`).length, message.content.length).trim());
-            }
-            /** Handle UwU Counter **/
-            const uwuCounterService = inversify_config_1.default.get(types_1.TYPES.UwUCounterService);
-            uwuCounterService.handle(message);
+            if (message.guild == null)
+                return;
+            if (message.content.toLowerCase().includes('uwu') == false)
+                return;
+            var kawaekoId = `${message.guild.id}${message.author.id}`;
+            var guildId = message.guild.id;
+            var userId = message.author.id;
+            var uwuRepo = new mongodb_typescript_1.Repository(kawaeko_uwu_counter_1.KawaekoBotUwUCounter, inversify_config_1.default.get(types_1.TYPES.DbClient).db, "UwU Counter");
+            yield uwuRepo.findById(kawaekoId).then((uwuEntry) => __awaiter(this, void 0, void 0, function* () {
+                if (uwuEntry == null) {
+                    yield uwuRepo.insert(new kawaeko_uwu_counter_1.KawaekoBotUwUCounter(kawaekoId, guildId, userId, 1));
+                }
+                else {
+                    yield uwuRepo.update(new kawaeko_uwu_counter_1.KawaekoBotUwUCounter(kawaekoId, guildId, userId, uwuEntry.uwuCount + 1));
+                }
+            }));
         });
     }
+    ;
 };
-NewMessageHandler = __decorate([
+UwUCounterService = __decorate([
     inversify_1.injectable()
-], NewMessageHandler);
-exports.NewMessageHandler = NewMessageHandler;
-//# sourceMappingURL=new-message-handler.js.map
+], UwUCounterService);
+exports.UwUCounterService = UwUCounterService;
+;
+//# sourceMappingURL=uwu-counter-services.js.map
