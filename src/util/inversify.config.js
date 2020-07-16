@@ -7,8 +7,9 @@ const bot_1 = require("../bot/bot");
 const discord_js_1 = require("discord.js");
 const log_config_1 = require("./log.config");
 const dbclient_1 = require("./dbclient");
-const command_service_1 = require("../bot/services/command-services/command-service");
+const command_service_1 = require("../bot/services/message-services/command-service");
 const new_message_handler_1 = require("../bot/services/event-handlers/new-message-handler");
+const uwu_counter_services_1 = require("../bot/services/message-services/uwu-counter-services");
 let container = new inversify_1.Container();
 container.bind(types_1.TYPES.Bot).to(bot_1.Bot).inSingletonScope();
 container.bind(types_1.TYPES.Client).toConstantValue(new discord_js_1.Client());
@@ -21,5 +22,6 @@ container.bind(types_1.TYPES.GatewayEventLogger).toConstantValue(log_config_1.fa
 container.bind(types_1.TYPES.DbClient).to(dbclient_1.DbClient).inSingletonScope();
 container.bind(types_1.TYPES.CommandService).to(command_service_1.CommandService).inSingletonScope();
 container.bind(types_1.TYPES.NewMessageHandler).to(new_message_handler_1.NewMessageHandler).inSingletonScope();
+container.bind(types_1.TYPES.UwUCounterService).to(uwu_counter_services_1.UwUCounterService).inSingletonScope();
 exports.default = container;
 //# sourceMappingURL=inversify.config.js.map

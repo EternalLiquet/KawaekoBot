@@ -10,6 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const cross_fetch_1 = require("cross-fetch");
+const kawaeko_uwu_counter_1 = require("../../../../entities/kawaeko-uwu-counter");
+const inversify_config_1 = require("../../../../util/inversify.config");
+const mongodb_typescript_1 = require("mongodb-typescript");
+const types_1 = require("../../../../util/types");
 class FunModule {
     constructor() {
         this.ModuleCommandList = [
@@ -64,6 +68,49 @@ class FunModule {
                             .catch(error => {
                             Promise.reject(error);
                         });
+                    });
+                }
+            },
+            {
+                name: 'uwu',
+                description: 'See how many times a user has said uwu',
+                help_text: 'POC',
+                alias: 'owo',
+                execute(message, args) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        if (args.trim() == '') {
+                            var uwuRepo = new mongodb_typescript_1.Repository(kawaeko_uwu_counter_1.KawaekoBotUwUCounter, inversify_config_1.default.get(types_1.TYPES.DbClient).db, "UwU Counter");
+                            var uwuList = uwuRepo.find({});
+                            var uwuCount = 0;
+                            yield uwuList.forEach((entry) => {
+                                if (entry.guildId == message.guild.id) {
+                                    uwuCount += entry.uwuCount;
+                                }
+                                ;
+                            });
+                            message.channel.send(`${message.guild.name}'s uwu count is ${uwuCount}`);
+                        }
+                        else if (message.guild.members.cache.find(user => user.displayName.trim().toLowerCase() == args.trim().toLowerCase())) {
+                            var guildMember = message.guild.members.cache.find(user => user.displayName.trim().toLowerCase() == args.trim().toLowerCase());
+                            if (guildMember.user.bot) {
+                                message.reply(`${guildMember.displayName} is a bot`);
+                                return;
+                            }
+                            var uwuRepo = new mongodb_typescript_1.Repository(kawaeko_uwu_counter_1.KawaekoBotUwUCounter, inversify_config_1.default.get(types_1.TYPES.DbClient).db, "UwU Counter");
+                            var uwuList = uwuRepo.find({});
+                            var uwuCount = 0;
+                            yield uwuList.forEach((entry) => {
+                                if (entry.guildId == message.guild.id && entry.userId == guildMember.id) {
+                                    uwuCount += entry.uwuCount;
+                                }
+                                ;
+                            });
+                            message.channel.send(`${guildMember.displayName}'s uwu count is ${uwuCount}`);
+                        }
+                        else {
+                            message.reply(`user ${args} not found!`);
+                        }
+                        ;
                     });
                 }
             }

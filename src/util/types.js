@@ -12,6 +12,7 @@ exports.TYPES = {
     DatabaseConnectionLogger: Symbol("DatabaseConnectionLogger"),
     FunModuleLogger: Symbol("FunModuleLogger"),
     CommandService: Symbol("CommandService"),
-    NewMessageHandler: Symbol("NewMessageHandler")
+    NewMessageHandler: Symbol("NewMessageHandler"),
+    UwUCounterService: Symbol("UwUCounterService")
 };
 //# sourceMappingURL=types.js.map

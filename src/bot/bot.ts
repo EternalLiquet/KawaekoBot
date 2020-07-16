@@ -4,7 +4,7 @@ import { TYPES } from "../util/types";
 import { Logger } from "typescript-logging";
 import { DbClient } from "../util/dbclient";
 import container from "../util/inversify.config";
-import { CommandService } from "./services/command-services/command-service";
+import { CommandService } from "./services/message-services/command-service";
 import { NewMessageHandler } from './services/event-handlers/new-message-handler';
 
 @injectable()
