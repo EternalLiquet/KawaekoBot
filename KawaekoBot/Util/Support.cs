@@ -10,6 +10,7 @@ namespace KawaekoBot.Util
             DirectorySetup.MakeSureAllDirectoriesExist();
             AppSettings.MakeSureSettingsJsonExists();
             AppSettings.ReadSettingsFromFile();
+            MongoDbClient.InstantiateMongoDriver();
             Log.Information("Startup Operations complete");
         }
     }
