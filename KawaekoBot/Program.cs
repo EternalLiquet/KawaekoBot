@@ -10,14 +10,14 @@ using Serilog;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using KawaekoBot.Services;
+using System;
 
 namespace KawaekoBot
 {
     class Program
     {
         private DiscordSocketClient _discordClient;
-        private CommandService _commandService;
-        private CommandHandler _commandHandler;
 
         static void Main(string[] args)
             => new Program().StartAsync().GetAwaiter().GetResult();
@@ -26,26 +26,16 @@ namespace KawaekoBot
         {
             Support.StartupOperations();
             await LogIntoDiscord();
-            await InstantiateCommandServices();
+            await InitializeEventHandlers();
             _discordClient.Log += LogHandler.LogMessages;
             await Task.Delay(-1);
         }
 
-        private async Task InstantiateCommandServices()
+        private async Task InitializeEventHandlers()
         {
-            Log.Information("Instantiating Command Services");
-            CreateCommandServiceWithOptions(ref _commandService);
-            _commandHandler = new CommandHandler(_discordClient, _commandService);
-            await _commandHandler.InitializeCommandsAsync();
-        }
-
-        private void CreateCommandServiceWithOptions(ref CommandService _commandService)
-        {
-            _commandService = new CommandService(new CommandServiceConfig
-            {
-                LogLevel = LogSeverity.Verbose,
-                CaseSensitiveCommands = false
-            });
+            Log.Information("Initializing Event Handlers");
+            MessageHandler messageHandler = new MessageHandler(_discordClient);
+            await messageHandler.InitializeMessageDependentServices();
         }
 
         private async Task LogIntoDiscord()
@@ -61,7 +51,7 @@ namespace KawaekoBot
                     await _discordClient.SetGameAsync("UwU Watcha Saaaay? OwO when you only meant welllll", null, ActivityType.Playing);
                     _discordClient.Ready += () =>
                     {
-                        Log.Information("Bean Bot successfully connected");
+                        Log.Information("Kawaeko Bot successfully connected");
                         return Task.CompletedTask;
                     };
                     loggedIn = true;
