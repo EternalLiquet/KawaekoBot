@@ -40,7 +40,7 @@ namespace KawaekoBot.Modules
 
         [Command("meme")]
         [Summary("Will give you a random meme from reddit")]
-        [Remarks("meme")]
+        [Remarks("meme [subreddit name (Optional)]")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task Meme(string subreddit = "")
         {
@@ -49,7 +49,7 @@ namespace KawaekoBot.Modules
 
         [Command("uwu")]
         [Summary("I've been tracking uwu's, I will give you a user's count or the server's count")]
-        [Remarks("uwu [User (Optional)]")]
+        [Remarks("uwu [@User (Optional)]")]
         [RequireBotPermission(ChannelPermission.SendMessages)]
         public async Task UwU(SocketGuildUser user = null)
         {
