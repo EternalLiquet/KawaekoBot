@@ -48,7 +48,7 @@ namespace KawaekoBot
                 {
                     await _discordClient.LoginAsync(TokenType.Bot, AppSettings.Settings["botToken"]);
                     await _discordClient.StartAsync();
-                    await _discordClient.SetGameAsync("UwU Watcha Saaaay? OwO when you only meant welllll", null, ActivityType.Playing);
+                    await _discordClient.SetGameAsync("For a list of my commands, type ~> help", null, ActivityType.Playing);
                     _discordClient.Ready += () =>
                     {
                         Log.Information("Kawaeko Bot successfully connected");
