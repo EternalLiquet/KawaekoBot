@@ -59,6 +59,7 @@ namespace KawaekoBot.Modules
                 var channelToRemove = await NextMessageAsync(timeout: TimeSpan.FromSeconds(60));
                 if (!await IsChannelNotNullAndValidTwitchListener(messagesInInteraction, channelToRemove)) return;
                 await twitchService.RemoveTwitchMonitorRecord($"{Context.Channel.Id}{channelToRemove.Content}");
+                messagesInInteraction.Add(Context.Message);
             }
             finally
             {
@@ -75,7 +76,7 @@ namespace KawaekoBot.Modules
                 if (results.Count > 0)
                 {
                     Log.Information("Twitch user found");
-                    messagesInInteraction.Add(await ReplyAsync($"Twitch listener {channelToRemove.Content} was found for removal"));
+                    messagesInInteraction.Add(await ReplyAsync($"Twitch listener {channelToRemove.Content} was found for removal, removing this listener"));
                     return true;
                 }
                 else
@@ -109,20 +110,27 @@ namespace KawaekoBot.Modules
 
         private async Task SendTwitchListenerListEmbed(List<TwitchMonitorRecord> twitchMonitorList)
         {
-            EmbedBuilder twitchListenerListEmbed = new EmbedBuilder()
+            if (twitchMonitorList.Count > 0)
             {
-                Title = "Twitch Listeners",
-                Description = "Kawaeko Bot is listening for these channels"
-            };
-            foreach (var record in twitchMonitorList)
-            {
-                twitchListenerListEmbed.AddField(field =>
+                EmbedBuilder twitchListenerListEmbed = new EmbedBuilder()
                 {
-                    field.Name = record.twitchUsername;
-                    field.Value = record.streamAnnouncementMessage;
-                });
+                    Title = "Twitch Listeners",
+                    Description = "Kawaeko Bot is listening for these channels"
+                };
+                foreach (var record in twitchMonitorList)
+                {
+                    twitchListenerListEmbed.AddField(field =>
+                    {
+                        field.Name = record.twitchUsername;
+                        field.Value = record.streamAnnouncementMessage;
+                    });
+                }
+                await ReplyAndDeleteAsync(null, false, embed: twitchListenerListEmbed.Build(), timeout: TimeSpan.FromSeconds(30));
             }
-            await ReplyAndDeleteAsync(null, false, embed: twitchListenerListEmbed.Build(), timeout: TimeSpan.FromSeconds(30));
+            else
+            {
+                await ReplyAndDeleteAsync("No Twitch Listeners active in this channel");
+            }
         }
 
         private async Task InvokeAddTwitchListener()
