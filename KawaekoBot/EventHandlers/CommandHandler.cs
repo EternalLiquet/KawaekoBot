@@ -2,6 +2,9 @@
 
 using Discord.Commands;
 using Discord.WebSocket;
+using Discord.Addons.Interactive;
+
+using Microsoft.Extensions.DependencyInjection;
 
 using Serilog;
 using System;
@@ -14,12 +17,18 @@ namespace KawaekoBot.EventHandlers
     {
         private readonly DiscordSocketClient _discordClient;
         private readonly CommandService _commandService;
+        private readonly IServiceProvider _services;
 
         public CommandHandler(DiscordSocketClient discordClient, CommandService commandService)
         {
             Log.Information("Instantiating Command Handler");
             this._discordClient = discordClient;
             this._commandService = commandService;
+            _services = new ServiceCollection()
+                .AddSingleton(_discordClient)
+                .AddSingleton(_commandService)
+                .AddSingleton(new InteractiveService(_discordClient))
+                .BuildServiceProvider();
         }
 
         public async Task InitializeCommandsAsync()
@@ -28,7 +37,7 @@ namespace KawaekoBot.EventHandlers
             _discordClient.MessageReceived += HandleCommandAsync;
             _commandService.CommandExecuted += LogHandler.LogCommands;
             await _commandService.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
-                                                  services: null);
+                                                  services: _services);
         }
 
         internal async Task HandleCommandAsync(SocketMessage messageEvent)
@@ -44,7 +53,7 @@ namespace KawaekoBot.EventHandlers
             await _commandService.ExecuteAsync(
                 context: context,
                 argPos: argPos,
-                services: null);
+                services: _services);
         }
 
         internal bool MessageHasCommandPrefix(SocketUserMessage discordMessage, ref int argPos)

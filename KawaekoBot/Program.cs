@@ -12,12 +12,24 @@ using System.Net;
 using System.Threading.Tasks;
 using KawaekoBot.Services;
 using System;
+using TwitchLib.Api.Services;
+using TwitchLib.Api;
+using System.Net.Http;
+using System.Collections.Generic;
+using KawaekoBot.Entities;
+
+using Newtonsoft.Json;
+using TwitchLib.Api.Services.Events.LiveStreamMonitor;
+using KawaekoBot.Entities.TwitchEntities;
 
 namespace KawaekoBot
 {
     class Program
     {
         private DiscordSocketClient _discordClient;
+        private LiveStreamMonitorService Monitor;
+        private TwitchAPI API;
+        private static HttpClient httpClient = new HttpClient();
 
         static void Main(string[] args)
             => new Program().StartAsync().GetAwaiter().GetResult();
@@ -27,7 +39,7 @@ namespace KawaekoBot
             Support.StartupOperations();
             await LogIntoDiscord();
             await InitializeEventHandlers();
-            _discordClient.Log += LogHandler.LogMessages;
+            await TwitchMonitor.StartLiveMonitorAsync(_discordClient);
             await Task.Delay(-1);
         }
 
@@ -36,6 +48,8 @@ namespace KawaekoBot
             Log.Information("Initializing Event Handlers");
             MessageHandler messageHandler = new MessageHandler(_discordClient);
             await messageHandler.InitializeMessageDependentServices();
+            LogEventHandler logEventHandler = new LogEventHandler(_discordClient);
+            logEventHandler.InitializeLogDependentServices();
         }
 
         private async Task LogIntoDiscord()

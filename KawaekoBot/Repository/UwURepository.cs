@@ -23,7 +23,7 @@ namespace KawaekoBot.Repository
         private string _guildId;
         private string _userId;
 
-        private IMongoCollection<UwURecord> _collection = MongoDbClient.beanDatabase.GetCollection<UwURecord>("UwUCounter");
+        private IMongoCollection<UwURecord> _collection = MongoDbClient.kawaekoDatabase.GetCollection<UwURecord>("UwUCounter");
 
         public UwURepository(SocketCommandContext commandContext)
         {

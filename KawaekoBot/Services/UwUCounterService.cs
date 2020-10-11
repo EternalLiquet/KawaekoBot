@@ -50,7 +50,7 @@ namespace KawaekoBot.Services
 
         public async Task<int> CountUwU(SocketGuildUser user, SocketCommandContext commandContext)
         {
-            var uwuCollection = MongoDbClient.beanDatabase.GetCollection<UwURecord>("UwUCounter");
+            var uwuCollection = MongoDbClient.kawaekoDatabase.GetCollection<UwURecord>("UwUCounter");
             UwURepository uwuCounterRepo;
             switch (user) 
             {
