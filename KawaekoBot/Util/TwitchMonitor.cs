@@ -31,6 +31,7 @@ namespace KawaekoBot.Util
         {
             twitchService = new TwitchService(_client);
             var records = await twitchService.GetTwitchMonitorList();
+            Log.Information($"Twitch Records Retrieved: ${records}");
             List<string> userNameList = new List<string>();
             foreach (var record in records)
             {
