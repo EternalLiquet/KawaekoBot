@@ -46,7 +46,8 @@ namespace KawaekoBot.Util
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Twitch User Not FoundL ${e.Message}");
+                    Log.Error($"Twitch User Not Found: ${e.Message}");
+                    Log.Error(userIdList.toString());
                 }
                 if (!twitchMonitorStarted)
                 {
