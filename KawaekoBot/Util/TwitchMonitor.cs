@@ -40,7 +40,14 @@ namespace KawaekoBot.Util
 
             if (userIdList.Count >= 1)
             {
-                Monitor.SetChannelsByName(userIdList);
+                try 
+                {
+                    Monitor.SetChannelsByName(userIdList);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Twitch User Not FoundL ${e.Message}");
+                }
                 if (!twitchMonitorStarted)
                 {
                     Log.Information($"Starting Twitch Monitor for {userIdList.Count} users");
