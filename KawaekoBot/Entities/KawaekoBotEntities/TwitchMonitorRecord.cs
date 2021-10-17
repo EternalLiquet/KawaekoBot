@@ -11,14 +11,14 @@ namespace KawaekoBot.Entities.KawaekoBotEntities
         [BsonId]
         public string twitchMonitorRecordId { get; set; }
         public string channelId { get; set; }
-        public string twitchUsername { get; set; }
+        public string twitchId { get; set; }
         public string streamAnnouncementMessage { get; set; }
 
-        public TwitchMonitorRecord(SocketCommandContext context, string twitchUsername, string streamAnnouncementMessage)
+        public TwitchMonitorRecord(SocketCommandContext context, string twitchId, string streamAnnouncementMessage)
         {
-            this.twitchMonitorRecordId = $"{context.Channel.Id}{twitchUsername}";
+            this.twitchMonitorRecordId = $"{context.Channel.Id}{twitchId}";
             this.channelId = context.Channel.Id.ToString();
-            this.twitchUsername = twitchUsername;
+            this.twitchId = twitchId;
             this.streamAnnouncementMessage = streamAnnouncementMessage;
         }
     }

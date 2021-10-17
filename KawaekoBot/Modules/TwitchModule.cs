@@ -2,6 +2,7 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
+using KawaekoBot.Entities;
 using KawaekoBot.Entities.KawaekoBotEntities;
 using KawaekoBot.Services;
 using Para.bot.Attributes;
@@ -117,12 +118,27 @@ namespace KawaekoBot.Modules
                     Title = "Twitch Listeners",
                     Description = "Kawaeko Bot is listening for these channels"
                 };
+                int channelListenCount = 0;
                 foreach (var record in twitchMonitorList)
                 {
-                    twitchListenerListEmbed.AddField(field =>
+                    if (Context.Channel.Id.ToString() == record.channelId)
                     {
-                        field.Name = record.twitchUsername;
-                        field.Value = record.streamAnnouncementMessage;
+                        channelListenCount++;
+                        var username = await twitchService.GetTwitchUserInfoFromId(record.twitchId);
+                        var usernameToEmbed = username?.data[0].display_name ?? "Something has gone wrong, please contact Liquet";
+                        twitchListenerListEmbed.AddField(field =>
+                        {
+                            field.Name = usernameToEmbed;
+                            field.Value = username != null ? record.streamAnnouncementMessage : "Error";
+                        });
+                    }
+                }
+                if (channelListenCount == 0) 
+                {
+                    twitchListenerListEmbed.AddField(field => 
+                    {
+                        field.Name = "No Twitch Listeners are active in this channel!";
+                        field.Value = "You can add a new Twitch Listener to this channel by using ~> add twitch listener";
                     });
                 }
                 await ReplyAndDeleteAsync(null, false, embed: twitchListenerListEmbed.Build(), timeout: TimeSpan.FromSeconds(30));
@@ -142,11 +158,12 @@ namespace KawaekoBot.Modules
                 twitchService = new TwitchService();
                 messagesInInteraction.Add(await ReplyAsync("Which twitch channel do you want to monitor for stream activity?"));
                 var channelToWatch = await NextMessageAsync(timeout: TimeSpan.FromSeconds(60));
-                if (!await IsChannelNotNullAndValid(messagesInInteraction, channelToWatch)) return;
+                string twitchUserId = await getTwitchUserIdFromChannelName(messagesInInteraction, channelToWatch);
+                if (twitchUserId == null) return;
                 messagesInInteraction.Add(await ReplyAsync("What would you like to say when this channel goes online? You can use `[streamer]` and `[streamlink]` and I will replace it with the streamer's name or their stream link respectively!"));
                 var announcementText = await NextMessageAsync(timeout: TimeSpan.FromSeconds(120));
                 if (!await IsAnnouncementNotNull(messagesInInteraction, announcementText)) return;
-                await twitchService.SaveOrUpdateTwitchMonitorRecord(new TwitchMonitorRecord(Context, channelToWatch.Content, announcementText.Content));
+                await twitchService.SaveOrUpdateTwitchMonitorRecord(new TwitchMonitorRecord(Context, twitchUserId, announcementText.Content));
                 await SendConfirmationEmbed(messagesInInteraction, channelToWatch, announcementText);
             }
             finally
@@ -180,27 +197,28 @@ namespace KawaekoBot.Modules
             }
         }
 
-        private async Task<bool> IsChannelNotNullAndValid(List<IMessage> messagesInInteraction, SocketMessage channelToWatch)
+        private async Task<string> getTwitchUserIdFromChannelName(List<IMessage> messagesInInteraction, SocketMessage channelToWatch)
         {
             if (channelToWatch != null)
             {
                 messagesInInteraction.Add(channelToWatch);
-                if (await twitchService.TwitchUserExists(channelToWatch.Content))
+                TwitchHelixUserInfoResponse userInfo = await twitchService.TwitchUserExists(channelToWatch.Content) ?? null;
+                if (userInfo != null)
                 {
                     Log.Information("Twitch user found");
                     messagesInInteraction.Add(await ReplyAsync($"Twitch user {channelToWatch.Content} was found"));
-                    return true;
+                    return userInfo.data[0].id;
                 }
                 else
                 {
                     messagesInInteraction.Add(await ReplyAsync($"Twitch user {channelToWatch.Content} was not found"));
-                    return false;
+                    return null;
                 }
             }
             else
             {
                 messagesInInteraction.Add(await ReplyAsync("Time has expired, please try again"));
-                return false;
+                return null;
             }
         }
 

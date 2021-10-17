@@ -35,7 +35,7 @@ namespace KawaekoBot.Util
             List<string> userNameList = new List<string>();
             foreach (var record in records)
             {
-                userNameList.Add(record.twitchUsername);
+                userNameList.Add(record.twitchId);
             }
             userIdList = userNameList;
 
@@ -43,12 +43,12 @@ namespace KawaekoBot.Util
             {
                 try 
                 {
-                    Monitor.SetChannelsByName(userIdList);
+                    Monitor.SetChannelsById(userIdList);
                 }
                 catch (Exception e)
                 {
                     Log.Error($"Twitch User Not Found: ${e.Message}");
-                    Log.Error(userIdList.toString());
+                    Log.Error(userIdList.ToString());
                 }
                 if (!twitchMonitorStarted)
                 {

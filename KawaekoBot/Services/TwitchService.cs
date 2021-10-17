@@ -38,12 +38,12 @@ namespace KawaekoBot.Services
             return await twitchSettingsRepo.GetAllTwitchMonitorRecords();
         }
 
-        public async Task<List<TwitchMonitorRecord>> GetTwitchMonitorRecord(string username)
+        public async Task<List<TwitchMonitorRecord>> GetTwitchMonitorRecord(string id)
         {
-            return await twitchSettingsRepo.GetTwitchMonitorRecordsByUser(username);
+            return await twitchSettingsRepo.GetTwitchMonitorRecordsById(id);
         }
 
-        public async Task<bool> TwitchUserExists(string username)
+        public async Task<TwitchHelixUserInfoResponse> TwitchUserExists(string username)
         {
             var accessToken = await CreateNewAccessToken();
             httpClient = new HttpClient();
@@ -61,7 +61,7 @@ namespace KawaekoBot.Services
             if (!userData.IsSuccessStatusCode)
             {
                 Log.Error($"Attempt to get twitch user id failed for reason: {await userData.Content.ReadAsStringAsync()}");
-                return false;
+                return null;
             }
             else
             {
@@ -69,12 +69,12 @@ namespace KawaekoBot.Services
                 if (userInfo.data.Count() != 0)
                 {
                     Log.Information($"Twitch User {username} found");
-                    return true;
+                    return userInfo;
                 }
                 else
                 {
                     Log.Error($"Twitch user {username} not found");
-                    return false;
+                    return null;
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace KawaekoBot.Services
             await TwitchMonitor.UpdateMonitorList();
         }
 
-        public async Task<TwitchHelixUserInfoResponse> GetTwitchUserInfo(string username)
+        public async Task<TwitchHelixUserInfoResponse> GetTwitchUserInfoFromUsername(string username)
         {
             var accessToken = await CreateNewAccessToken();
             httpClient = new HttpClient();
@@ -116,6 +116,42 @@ namespace KawaekoBot.Services
                 else
                 {
                     Log.Error($"Twitch User Details For {username} not found");
+                    return null;
+                }
+            }
+        }
+
+        public async Task<TwitchHelixUserInfoResponse> GetTwitchUserInfoFromId(string twitchId)
+        {
+            var accessToken = await CreateNewAccessToken();
+            httpClient = new HttpClient();
+            if (!httpClient.DefaultRequestHeaders.Contains("Client-ID"))
+            {
+                httpClient.DefaultRequestHeaders.Add("Client-ID", TwitchMonitor.API.Settings.ClientId);
+            }
+            if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
+            {
+                httpClient.DefaultRequestHeaders.Remove("Authorization");
+            }
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+            HttpResponseMessage userData = await httpClient.GetAsync($"https://api.twitch.tv/helix/users?id={twitchId}");
+            Log.Information($"Results: {userData}");
+            if (!userData.IsSuccessStatusCode)
+            {
+                Log.Error($"Attempt to get twitch user details failed for reason: {await userData.Content.ReadAsStringAsync()}");
+                return null;
+            }
+            else
+            {
+                TwitchHelixUserInfoResponse userInfo = JsonConvert.DeserializeObject<TwitchHelixUserInfoResponse>(await userData.Content.ReadAsStringAsync());
+                if (userInfo.data.Count() != 0)
+                {
+                    Log.Information($"Twitch User Details For ID {twitchId} found");
+                    return userInfo;
+                }
+                else
+                {
+                    Log.Error($"Twitch User Details For ID {twitchId} not found");
                     return null;
                 }
             }
@@ -176,8 +212,8 @@ namespace KawaekoBot.Services
         public async void Monitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
         {
             var streamLink = $"https://www.twitch.tv/{e.Stream.UserName}";
-            var records = await GetTwitchMonitorRecord(e.Stream.UserName);
-            var twitchUserInfo = await GetTwitchUserInfo(e.Stream.UserName);
+            var twitchUserInfo = await GetTwitchUserInfoFromUsername(e.Stream.UserName);
+            var records = await GetTwitchMonitorRecord(twitchUserInfo.data[0].id);
             var profileImageLink = twitchUserInfo.data[0].profile_image_url;
             EmbedAuthorBuilder twitchStreamer = new EmbedAuthorBuilder
             {
@@ -199,7 +235,7 @@ namespace KawaekoBot.Services
             EmbedBuilder twitchAnnouncement = new EmbedBuilder
             {
                 Title = e.Stream.Title,
-                ImageUrl = $"https://static-cdn.jtvnw.net/previews-ttv/live_user_{e.Stream.UserName}-1920x1080.jpg",
+                ImageUrl = $"https://static-cdn.jtvnw.net/previews-ttv/live_user_{e.Stream.UserName.ToLower()}-1920x1080.jpg",
                 ThumbnailUrl = profileImageLink,
                 Author = twitchStreamer,
                 Fields = new List<EmbedFieldBuilder>() { gameField, viewerCountField },

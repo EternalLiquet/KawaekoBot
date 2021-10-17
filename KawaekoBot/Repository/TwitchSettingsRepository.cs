@@ -19,25 +19,25 @@ namespace KawaekoBot.Repository
             try
             {
                 await _collection.InsertOneAsync(twitchMonitorRecord);
-                Log.Information($"Twitch Monitor Record with username {twitchMonitorRecord.twitchUsername} saved successfully");
+                //Log.Information($"Twitch Monitor Record with username {twitchMonitorRecord.twitchUsername} saved successfully");
             }
             catch (Exception e)
             {
-                Log.Error($"Twitch Monitor Record with username {twitchMonitorRecord.twitchUsername} failed saving for reason: {e.Message}");
+                //Log.Error($"Twitch Monitor Record with username {twitchMonitorRecord.twitchUsername} failed saving for reason: {e.Message}");
             }
         }
 
-        public async Task<List<TwitchMonitorRecord>> GetTwitchMonitorRecordsByUser(string username)
+        public async Task<List<TwitchMonitorRecord>> GetTwitchMonitorRecordsById(string id)
         {
             try
             {
-                var filterByUser = Builders<TwitchMonitorRecord>.Filter.Eq("twitchUsername", username);
+                var filterByUser = Builders<TwitchMonitorRecord>.Filter.Eq("twitchId", id);
                 var results = await _collection.FindAsync<TwitchMonitorRecord>(filterByUser);
                 return await results.ToListAsync();
             }
             catch (Exception e)
             {
-                Log.Error($"Twitch Monitor Records with username {username} failed fetching for reason: {e.Message}");
+                Log.Error($"Twitch Monitor Records with username {id} failed fetching for reason: {e.Message}");
                 return null;
             }
         }
@@ -52,7 +52,7 @@ namespace KawaekoBot.Repository
             }
             catch (Exception e)
             {
-                Log.Error($"Twitch Monitor Record with username {twitchMonitorRecord.twitchUsername} failed fetching for reason: {e.Message}");
+               // Log.Error($"Twitch Monitor Record with username {twitchMonitorRecord.twitchUsername} failed fetching for reason: {e.Message}");
                 return null;
             }
         }
@@ -63,11 +63,11 @@ namespace KawaekoBot.Repository
             try
             {
                 await _collection.ReplaceOneAsync(filterOne, twitchMonitorRecord);
-                Log.Information($"Twitch Monitor Record with username {twitchMonitorRecord.twitchUsername} saved successfully");
+               // Log.Information($"Twitch Monitor Record with username {twitchMonitorRecord.twitchUsername} saved successfully");
             }
             catch (Exception e)
             {
-                Log.Error($"Twitch Monitor Record with username {twitchMonitorRecord.twitchUsername} failed saving for reason: {e.Message}");
+               // Log.Error($"Twitch Monitor Record with username {twitchMonitorRecord.twitchUsername} failed saving for reason: {e.Message}");
             }
         }
 
